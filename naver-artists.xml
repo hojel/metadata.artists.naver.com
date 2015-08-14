@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scraper framework="1.1" date="2013-02-06" language="ko">
+	<NfoUrl dest="3">
+		<RegExp input="$$1" output="\1" dest="3">
+			<expression>(http://music.naver.com/artist.*)</expression>
+		</RegExp>
+	</NfoUrl>
+	<CreateArtistSearchUrl dest="3">
+		<RegExp input="$$1" output="&lt;url&gt;http://music.naver.com/search/search.nhn?query=\1&amp;target=artist&lt;/url&gt;" dest="3">
+			<expression/>
+		</RegExp>
+	</CreateArtistSearchUrl>
+	<GetArtistSearchResults dest="3">
+		<RegExp input="$$4" output="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;?&gt;&lt;results&gt;\1&lt;/results&gt;" dest="3">
+			<RegExp input="$$1" output="&lt;entity&gt;&lt;url&gt;http://music.naver.com/artist/intro.nhn?artistId=\1&lt;/url&gt;&lt;title&gt;\2&lt;/title&gt;&lt;/entity&gt;" dest="4">
+				<expression repeat="yes">&lt;dt&gt;&lt;a href="/artist/home\.nhn\?artistId=(\d+)" title="(.*?)"&gt;</expression>
+			</RegExp>
+			<expression noclean="1"/>
+		</RegExp>
+	</GetArtistSearchResults>
+	<GetArtistDetails dest="3">
+		<RegExp input="$$4" output="&lt;details&gt;\1&lt;/details&gt;" dest="3">
+			<RegExp input="$$1" output="\1" dest="10">
+				<expression>artistId=(\d+)"\s+class="NPI=a:main"</expression>
+			</RegExp>
+			<RegExp input="$$1" output="&lt;name&gt;\1&lt;/name&gt;" dest="4">
+				<expression>&lt;span class="txt"&gt;(.*?)&lt;/span&gt;</expression>
+			</RegExp>
+			<RegExp input="$$5" output="&lt;born&gt;\1&lt;/born&gt;" dest="4+">
+				<RegExp input="$$1" output="\1" dest="5">
+					<expression>&lt;dt class="birth"&gt;.*?&lt;dd&gt;(.*?)&lt;</expression>
+				</RegExp>
+				<expression>(\d{4}\.\d{2}\.\d{2})</expression>
+			</RegExp>
+			<RegExp input="$$5" output="&lt;died&gt;\1&lt;/died&gt;" dest="4+">
+				<RegExp input="$$1" output="\1" dest="5">
+					<expression>&lt;dt class="death"&gt;.*?&lt;dd&gt;(.*?)&lt;</expression>
+				</RegExp>
+				<expression>(\d{4}\.\d{2}\.\d{2})</expression>
+			</RegExp>
+			<RegExp input="$$5" output="&lt;formed&gt;\1&lt;/formed&gt;" dest="4+">
+				<RegExp input="$$1" output="\1" dest="5">
+					<expression>&lt;dt class="formation"&gt;.*?&lt;dd&gt;(.*?)&lt;</expression>
+				</RegExp>
+				<expression>(\d{4}\.\d{2}\.\d{2})</expression>
+			</RegExp>
+			<RegExp input="$$5" output="&lt;disbanded&gt;\1&lt;/disbanded&gt;" dest="4+">
+				<RegExp input="$$1" output="\1" dest="5">
+					<expression trim="1">&lt;dt class="break"&gt;.*?&lt;dd&gt;(.*?)&lt;</expression>
+				</RegExp>
+				<expression>(\d{4}\.\d{2}\.\d{2})</expression>
+			</RegExp>
+			<RegExp conditional="!enThumbs" input="$$1" output="&lt;thumb&gt;\1&lt;/thumb&gt;" dest="4+">
+				<expression>&lt;div class="thumb pht240"&gt;\s*&lt;img src="(.*?)"</expression>
+			</RegExp>
+			<RegExp input="$$5" output="&lt;genre&gt;\1&lt;/genre&gt;" dest="4+">
+				<RegExp input="$$1" output="\1" dest="5">
+					<expression>&lt;dt class="type"&gt;.*?&lt;dd&gt;(.*?)&lt;</expression>
+				</RegExp>
+				<expression repeat="yes" trim="1">\s*([^,]+)</expression>
+			</RegExp>
+			<RegExp input="$$5" output="&lt;style&gt;\1&lt;/style&gt;" dest="4+">
+				<RegExp input="$$1" output="\1" dest="5">
+					<expression trim="1">&lt;dt class="style"&gt;.*?&lt;dd&gt;(.*?)&lt;</expression>
+				</RegExp>
+				<expression repeat="yes" trim="1">\s*([^,]+)</expression>
+			</RegExp>
+			<RegExp input="$$5" output="&lt;yearsactive&gt;\1&lt;/yearsactive&gt;" dest="4+">
+				<RegExp input="$$1" output="\1" dest="5">
+					<expression>&lt;dt class="activity"&gt;.*?&lt;dd&gt;(.*?)&lt;</expression>
+				</RegExp>
+				<expression repeat="yes">(\d+)</expression>
+			</RegExp>
+			<RegExp input="$$5" output="&lt;biography&gt;\1&lt;/biography&gt;" dest="4+">
+				<RegExp input="$$1" output="\1" dest="6">
+					<expression noclean="1">&lt;p class="artist_intro_on"&gt;(.*?)&lt;/p&gt;</expression>
+				</RegExp>
+				<RegExp input="$$6" output="\1" dest="5">
+					<expression />
+				</RegExp>
+				<RegExp input="$$6" output="\1\n" dest="5">
+					<expression repeat="yes">(.*?)&lt;br */&gt;</expression>
+				</RegExp>
+				<RegExp input="$$6" output="\1" dest="5+">
+					<expression>br */&gt;([^&gt;]*)$</expression>
+				</RegExp>
+				<expression trim="1" />
+			</RegExp>
+			<RegExp conditional="enDiscography" input="$$10" output="&lt;url function=&quot;GetDiscography&quot;&gt;http://music.naver.com/artist/album.nhn?artistId=\1&amp;isRegular=Y&lt;/url&gt;" dest="4+">
+				<expression/>
+			</RegExp>
+			<RegExp conditional="enThumbs" input="$$10" output="&lt;url cache=&quot;naver-photo-$$10.htm&quot; function=&quot;GetArtistThumb&quot;&gt;http://music.naver.com/artist/photo.nhn?artistId=\1&lt;/url&gt;" dest="4+">
+				<expression/>
+			</RegExp>
+			<RegExp conditional="enFanart" input="$$10" output="&lt;url cache=&quot;naver-photo-$$10.htm&quot; function=&quot;GetArtistFanart&quot;&gt;http://music.naver.com/artist/photo.nhn?artistId=\1&lt;/url&gt;" dest="4+">
+				<expression/>
+			</RegExp>
+			<expression noclean="1"/>
+		</RegExp>
+	</GetArtistDetails>
+	<GetDiscography dest="3">
+		<RegExp input="$$4" output="&lt;details&gt;\1&lt;/details&gt;" dest="3">
+			<RegExp input="$$1" output="&lt;album&gt;&lt;title&gt;\1&lt;/title&gt;&lt;year&gt;\2&lt;/year&gt;&lt;/album&gt;" dest="4">
+				<expression repeat="yes">&lt;a [^&gt;]*title="([^"]*)"[^&gt;]*class="NPI=a:name[^"]*"&gt;.*?(\d{4})\.\d{2}</expression>
+			</RegExp>
+			<expression noclean="1"/>
+		</RegExp>
+	</GetDiscography>
+	<GetArtistThumb dest="3">
+		<RegExp input="$$4" output="&lt;details&gt;\1&lt;/details&gt;" dest="3">
+			<RegExp input="$$1" output="&lt;thumb preview=&quot;\1/thumbnail/\2&quot;&gt;\1/body/\2&lt;/thumb&gt;" dest="4">
+				<expression repeat="yes">class="NPI=a:image[^"]*"&gt;&lt;img src="(.*?)/thumbnail/(.*?)"&gt;</expression>
+			</RegExp>
+			<expression noclean="1"/>
+		</RegExp>
+	</GetArtistThumb>
+	<GetArtistFanart dest="3">
+		<RegExp input="$$4" output="&lt;details&gt;&lt;fanart&gt;\1&lt;/fanart&gt;&lt;/details&gt;" dest="3">
+			<RegExp input="$$1" output="&lt;thumb preview=&quot;\1/thumbnail/\2&quot;&gt;\1/body/\2&lt;/thumb&gt;" dest="4">
+				<expression repeat="yes">class="NPI=a:image[^"]*"&gt;&lt;img src="(.*?)/thumbnail/(.*?)"&gt;</expression>
+			</RegExp>
+			<expression noclean="1"/>
+		</RegExp>
+	</GetArtistFanart>
+</scraper>
