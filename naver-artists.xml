@@ -24,7 +24,7 @@
 				<expression>artistId=(\d+)"\s+class="NPI=a:main"</expression>
 			</RegExp>
 			<RegExp input="$$1" output="&lt;name&gt;\1&lt;/name&gt;" dest="4">
-				<expression>&lt;span class="txt"&gt;(.*?)&lt;/span&gt;</expression>
+				<expression>&lt;h2.*?&gt;(.*?)&lt;/h2&gt;</expression>
 			</RegExp>
 			<RegExp input="$$5" output="&lt;born&gt;\1&lt;/born&gt;" dest="4+">
 				<RegExp input="$$1" output="\1" dest="5">
@@ -55,7 +55,7 @@
 			</RegExp>
 			<RegExp input="$$5" output="&lt;genre&gt;\1&lt;/genre&gt;" dest="4+">
 				<RegExp input="$$1" output="\1" dest="5">
-					<expression>&lt;dt class="type"&gt;.*?&lt;dd&gt;(.*?)&lt;</expression>
+					<expression>&lt;strong class="genre"&gt;.*?&lt;dd&gt;(.*?)&lt;</expression>
 				</RegExp>
 				<expression repeat="yes" trim="1">\s*([^,]+)</expression>
 			</RegExp>
@@ -73,7 +73,7 @@
 			</RegExp>
 			<RegExp input="$$5" output="&lt;biography&gt;\1&lt;/biography&gt;" dest="4+">
 				<RegExp input="$$1" output="\1" dest="6">
-					<expression noclean="1">&lt;p class="artist_intro_on"&gt;(.*?)&lt;/p&gt;</expression>
+					<expression noclean="1">&lt;p class="dsc full"&gt;(.*?)&lt;/p&gt;</expression>
 				</RegExp>
 				<RegExp input="$$6" output="\1" dest="5">
 					<expression />
@@ -92,7 +92,7 @@
 			<RegExp conditional="enThumbs" input="$$10" output="&lt;url cache=&quot;naver-photo-$$10.htm&quot; function=&quot;GetArtistThumb&quot;&gt;http://music.naver.com/artist/photo.nhn?artistId=\1&lt;/url&gt;" dest="4+">
 				<expression/>
 			</RegExp>
-			<RegExp conditional="enFanart" input="$$10" output="&lt;url cache=&quot;naver-photo-$$10.htm&quot; function=&quot;GetArtistFanart&quot;&gt;http://music.naver.com/artist/photo.nhn?artistId=\1&lt;/url&gt;" dest="4+">
+			<RegExp conditional="enFanart" input="$$10" output="&lt;url cache=&quot;naver-photo-$$10.json&quot; function=&quot;GetArtistFanart&quot;&gt;http://music.naver.com/artist/photoListJson.nhn?artistId=\1&lt;/url&gt;" dest="4+">
 				<expression/>
 			</RegExp>
 			<expression noclean="1"/>
@@ -116,8 +116,8 @@
 	</GetArtistThumb>
 	<GetArtistFanart dest="3">
 		<RegExp input="$$4" output="&lt;details&gt;&lt;fanart&gt;\1&lt;/fanart&gt;&lt;/details&gt;" dest="3">
-			<RegExp input="$$1" output="&lt;thumb preview=&quot;\1/thumbnail/\2&quot;&gt;\1/body/\2&lt;/thumb&gt;" dest="4">
-				<expression repeat="yes">class="NPI=a:image[^"]*"&gt;&lt;img src="(.*?)/thumbnail/(.*?)"&gt;</expression>
+			<RegExp input="$$1" output="&lt;thumb preview=&quot;\1&quot;&gt;\2&lt;/thumb&gt;" dest="4">
+				<expression repeat="yes">thumbnail *: *"(.*?)".*?original *: *"(.*?)"</expression>
 			</RegExp>
 			<expression noclean="1"/>
 		</RegExp>
